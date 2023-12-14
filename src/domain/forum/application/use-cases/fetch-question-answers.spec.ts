@@ -1,0 +1,65 @@
+import { makeAnswer } from "test/factories/make-answer";
+import { FecthQuestionAnswersUseCase } from "./fetch-question-answers";
+import { InMemoryAnswersRepository } from "test/repositories/in-memory-answers-repository";
+import { UniqueEntityId } from "@/core/entities/unique-entity-id";
+
+let inMemoryAnswersRepository: InMemoryAnswersRepository;
+let sut: FecthQuestionAnswersUseCase;
+
+describe("Fecth Question Answers", () => {
+  beforeEach(() => {
+    inMemoryAnswersRepository = new InMemoryAnswersRepository();
+    sut = new FecthQuestionAnswersUseCase(inMemoryAnswersRepository);
+
+    // habilitar uso de datas fakes no new Date()
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    // habilitar uso de datas reais no new Date()
+    vi.useRealTimers();
+  });
+
+  it("Should be able to fecht question answers", async () => {
+    vi.setSystemTime(new Date(2022, 0, 20));
+    await inMemoryAnswersRepository.create(
+      makeAnswer({ questionId: new UniqueEntityId("question-1") })
+    );
+
+    vi.setSystemTime(new Date(2022, 0, 18));
+    await inMemoryAnswersRepository.create(
+      makeAnswer({ questionId: new UniqueEntityId("question-1") })
+    );
+
+    vi.setSystemTime(new Date(2022, 0, 23));
+    await inMemoryAnswersRepository.create(
+      makeAnswer({ questionId: new UniqueEntityId("question-1") })
+    );
+
+    const { answers } = await sut.execute({
+      questionId: "question-1",
+      page: 1,
+    });
+
+    expect(answers).toEqual([
+      expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
+      expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
+      expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
+    ]);
+  });
+
+  it("should be able to fecht paginated question answers", async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryAnswersRepository.create(
+        makeAnswer({ questionId: new UniqueEntityId("question-1") })
+      );
+    }
+
+    const { answers } = await sut.execute({
+      questionId: "question-1",
+      page: 2,
+    });
+
+    expect(answers).toHaveLength(2);
+  });
+});
