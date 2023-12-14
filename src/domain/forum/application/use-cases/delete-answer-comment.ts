@@ -1,3 +1,4 @@
+import { success, failure, Result } from "@/core/result";
 import { AnswerCommentsRepository } from "../repositories/answer-comments-repository";
 
 interface DeleteAnswerCommentUseCaseRequest {
@@ -5,7 +6,7 @@ interface DeleteAnswerCommentUseCaseRequest {
   answerCommentId: string;
 }
 
-interface DeleteAnswerCommentUseCaseResponse {}
+type DeleteAnswerCommentUseCaseResponse = Result<string, {}>;
 
 export class DeleteAnswerCommentUseCase {
   constructor(private answerCommentsRepository: AnswerCommentsRepository) {}
@@ -18,15 +19,16 @@ export class DeleteAnswerCommentUseCase {
       answerCommentId
     );
     if (!answerComment) {
-      throw new Error("Answer Comment not found.");
+      return failure("Answer Comment not found.");
     }
 
     if (answerComment.authorId.toString() !== authorId) {
-      throw new Error("Not allowed.");
+      //throw new Error("Not allowed.");
+      return failure("Not allowed");
     }
 
     await this.answerCommentsRepository.delete(answerComment);
 
-    return {};
+    return success({});
   }
 }
