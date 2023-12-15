@@ -29,9 +29,12 @@ describe("Fecth Recent Questions", () => {
     vi.setSystemTime(new Date(2022, 0, 23));
     await inMemoryQuestionsRepository.create(makeQuestion());
 
-    const { questions } = await sut.execute({ page: 1 });
+    const result = await sut.execute({ page: 1 });
 
-    expect(questions).toEqual([
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.questions).toEqual([
       expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
@@ -43,8 +46,11 @@ describe("Fecth Recent Questions", () => {
       await inMemoryQuestionsRepository.create(makeQuestion());
     }
 
-    const { questions } = await sut.execute({ page: 2 });
+    const result = await sut.execute({ page: 2 });
 
-    expect(questions).toHaveLength(2);
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.questions).toHaveLength(2);
   });
 });

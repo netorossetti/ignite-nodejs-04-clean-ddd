@@ -1,11 +1,17 @@
+import { Result, failure, success } from "@/core/result";
 import { AnswersRepository } from "../repositories/answers-repository";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
+import { NotAllowedError } from "./errors/not-allowed-error";
 
 interface DeleteAnswerUseCaseRequest {
   authorId: string;
   answerId: string;
 }
 
-interface DeleteAnswerUseCaseResponse {}
+type DeleteAnswerUseCaseResponse = Result<
+  ResourceNotFoundError | NotAllowedError,
+  {}
+>;
 
 export class DeleteAnswerUseCase {
   constructor(private answersRepository: AnswersRepository) {}
@@ -16,15 +22,15 @@ export class DeleteAnswerUseCase {
   }: DeleteAnswerUseCaseRequest): Promise<DeleteAnswerUseCaseResponse> {
     const answer = await this.answersRepository.findById(answerId);
     if (!answer) {
-      throw new Error("Answer not found.");
+      return failure(new ResourceNotFoundError());
     }
 
     if (answer.authorId.toString() !== authorId) {
-      throw new Error("Not allowed.");
+      return failure(new NotAllowedError());
     }
 
     await this.answersRepository.delete(answer);
 
-    return {};
+    return success({});
   }
 }

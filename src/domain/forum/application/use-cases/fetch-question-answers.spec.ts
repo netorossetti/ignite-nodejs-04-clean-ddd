@@ -36,12 +36,15 @@ describe("Fecth Question Answers", () => {
       makeAnswer({ questionId: new UniqueEntityId("question-1") })
     );
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: "question-1",
       page: 1,
     });
 
-    expect(answers).toEqual([
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.answers).toEqual([
       expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
@@ -55,11 +58,14 @@ describe("Fecth Question Answers", () => {
       );
     }
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: "question-1",
       page: 2,
     });
 
-    expect(answers).toHaveLength(2);
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.answers).toHaveLength(2);
   });
 });

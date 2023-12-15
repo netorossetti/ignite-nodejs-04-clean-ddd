@@ -1,3 +1,4 @@
+import { Result, success } from "@/core/result";
 import { Answer } from "../../enterprise/entities/answer";
 import { AnswersRepository } from "../repositories/answers-repository";
 
@@ -6,9 +7,12 @@ interface FecthQuestionAnswersUseCaseRequest {
   page: number;
 }
 
-interface FecthQuestionAnswersUseCaseResponse {
-  answers: Answer[];
-}
+type FecthQuestionAnswersUseCaseResponse = Result<
+  null,
+  {
+    answers: Answer[];
+  }
+>;
 
 export class FecthQuestionAnswersUseCase {
   constructor(private answersRepository: AnswersRepository) {}
@@ -21,6 +25,6 @@ export class FecthQuestionAnswersUseCase {
       questionId,
       { page }
     );
-    return { answers };
+    return success({ answers });
   }
 }

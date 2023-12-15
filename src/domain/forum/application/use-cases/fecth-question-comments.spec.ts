@@ -37,12 +37,15 @@ describe("Fecth Question Comments", () => {
       makeQuestionComment({ questionId: new UniqueEntityId("question-1") })
     );
 
-    const { questionComments } = await sut.execute({
+    const result = await sut.execute({
       questionId: "question-1",
       page: 1,
     });
 
-    expect(questionComments).toEqual([
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.questionComments).toEqual([
       expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
@@ -56,11 +59,14 @@ describe("Fecth Question Comments", () => {
       );
     }
 
-    const { questionComments } = await sut.execute({
+    const result = await sut.execute({
       questionId: "question-1",
       page: 2,
     });
 
-    expect(questionComments).toHaveLength(2);
+    expect(result.isSuccess()).toBe(true);
+    if (result.isFailure()) return;
+
+    expect(result.value.questionComments).toHaveLength(2);
   });
 });

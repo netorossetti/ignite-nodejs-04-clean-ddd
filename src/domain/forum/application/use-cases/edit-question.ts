@@ -1,5 +1,8 @@
+import { Result, failure, success } from "@/core/result";
 import { Question } from "../../enterprise/entities/question";
 import { QuestionsRepository } from "../repositories/questions-repository";
+import { NotAllowedError } from "./errors/not-allowed-error";
+import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 
 interface EditQuestionUseCaseRequest {
   authorId: string;
@@ -8,9 +11,12 @@ interface EditQuestionUseCaseRequest {
   content: string;
 }
 
-interface EditQuestionUseCaseResponse {
-  question: Question;
-}
+type EditQuestionUseCaseResponse = Result<
+  ResourceNotFoundError | NotAllowedError,
+  {
+    question: Question;
+  }
+>;
 
 export class EditQuestionUseCase {
   constructor(private questionsRepository: QuestionsRepository) {}
@@ -23,11 +29,11 @@ export class EditQuestionUseCase {
   }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
     const question = await this.questionsRepository.findById(questionId);
     if (!question) {
-      throw new Error("Question not found.");
+      return failure(new ResourceNotFoundError());
     }
 
     if (question.authorId.toString() !== authorId) {
-      throw new Error("Not allowed.");
+      return failure(new NotAllowedError());
     }
 
     question.title = title;
@@ -35,6 +41,6 @@ export class EditQuestionUseCase {
 
     await this.questionsRepository.save(question);
 
-    return { question };
+    return success({ question });
   }
 }

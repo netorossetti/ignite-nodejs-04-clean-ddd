@@ -1,3 +1,4 @@
+import { Result, success } from "@/core/result";
 import { AnswerComment } from "../../enterprise/entities/answer-comment";
 import { AnswerCommentsRepository } from "../repositories/answer-comments-repository";
 
@@ -6,9 +7,12 @@ interface FecthAnswerCommentsUseCaseRequest {
   page: number;
 }
 
-interface FecthAnswerCommentsUseCaseResponse {
-  answerComments: AnswerComment[];
-}
+type FecthAnswerCommentsUseCaseResponse = Result<
+  null,
+  {
+    answerComments: AnswerComment[];
+  }
+>;
 
 export class FecthAnswerCommentsUseCase {
   constructor(private answerCommentsRepository: AnswerCommentsRepository) {}
@@ -21,6 +25,6 @@ export class FecthAnswerCommentsUseCase {
       await this.answerCommentsRepository.findManyByAnswerId(answerId, {
         page,
       });
-    return { answerComments };
+    return success({ answerComments });
   }
 }

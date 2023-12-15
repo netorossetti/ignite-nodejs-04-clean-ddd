@@ -46,11 +46,10 @@ describe("Choose Question Best Answer", () => {
     const newAnswer = makeAnswer({ questionId: newQuestion.id });
     await inMemoryAnswersRepository.create(newAnswer);
 
-    expect(async () => {
-      await sut.execute({
-        authorId: "author-2",
-        answerId: newAnswer.id.toString(),
-      });
-    }).rejects.toBeInstanceOf(Error);
+    const result = await sut.execute({
+      authorId: "author-2",
+      answerId: newAnswer.id.toString(),
+    });
+    expect(result.isFailure()).toBe(true);
   });
 });

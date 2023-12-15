@@ -2,6 +2,7 @@ import { InMemoryQuestionCommentsRepository } from "test/repositories/in-memory-
 import { makeQuestionComment } from "test/factories/make-question-comment";
 import { DeleteQuestionCommentUseCase } from "./delete-question-comment";
 import { UniqueEntityId } from "@/core/entities/unique-entity-id";
+import { NotAllowedError } from "./errors/not-allowed-error";
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository;
 let sut: DeleteQuestionCommentUseCase;
@@ -34,12 +35,11 @@ describe("Delete Question Comment", () => {
       authorId: new UniqueEntityId("author-1"),
     });
     await inMemoryQuestionCommentsRepository.create(newQuestionComment);
-
-    expect(async () => {
-      await sut.execute({
-        authorId: "author-2",
-        questionCommentId: newQuestionComment.id.toString(),
-      });
-    }).rejects.toBeInstanceOf(Error);
+    const result = await sut.execute({
+      authorId: "author-2",
+      questionCommentId: newQuestionComment.id.toString(),
+    });
+    expect(result.isFailure()).toBe(true);
+    expect(result.value).toBeInstanceOf(NotAllowedError);
   });
 });

@@ -21,17 +21,17 @@ describe("Create Answer Comment", () => {
     const answer = makeAnswer();
     await inMemoryAnswersRepository.create(answer);
 
-    const { answerComment } = await sut.execute({
+    const result = await sut.execute({
       authorId: "author-1",
       answerId: answer.id.toString(),
       content: "Comentário da pergunta",
     });
 
-    expect(answerComment.id).toBeTruthy();
-    expect(inMemoryAnswerCommentsRepository.items[0].id).toEqual(
-      answerComment.id
+    expect(result.isSuccess()).toBeTruthy();
+    if (!result.isSuccess()) return;
+
+    expect(inMemoryAnswerCommentsRepository.items[0]).toEqual(
+      result.value?.answerComment
     );
-    expect(answerComment.answerId).toEqual(answer.id);
-    expect(answerComment.content).toEqual("Comentário da pergunta");
   });
 });
