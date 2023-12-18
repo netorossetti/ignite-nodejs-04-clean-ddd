@@ -13,3 +13,25 @@
 
 
 
+# Subdominios
+
+- Core: O que dá dinheiro
+- Supporting: Dá suporte para o core funcionar
+- Generic: Voce precisa, mas não são fundamentais
+
+### Exemplo: 
+
+# Core: 
+- Compra
+- Catálogo
+- Pagamento
+- Entrega
+
+# Supporting
+- Estoque
+
+# Generic
+- Notificação ao cliente
+- Promoções
+- Chat
+
