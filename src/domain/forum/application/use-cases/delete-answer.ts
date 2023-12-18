@@ -1,7 +1,7 @@
 import { Result, failure, success } from "@/core/result";
 import { AnswersRepository } from "../repositories/answers-repository";
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
-import { NotAllowedError } from "./errors/not-allowed-error";
+import { ResourceNotFoundError } from "@/core/error/errors/resource-not-found-error";
+import { NotAllowedError } from "@/core/error/errors/not-allowed-error";
 
 interface DeleteAnswerUseCaseRequest {
   authorId: string;
