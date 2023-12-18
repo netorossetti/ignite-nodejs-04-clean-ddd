@@ -2,13 +2,19 @@ import { makeAnswer } from "test/factories/make-answer";
 import { FecthQuestionAnswersUseCase } from "./fetch-question-answers";
 import { InMemoryAnswersRepository } from "test/repositories/in-memory-answers-repository";
 import { UniqueEntityId } from "@/core/entities/unique-entity-id";
+import { InMemoryAnswerAttachmentsRepository } from "test/repositories/in-memory-answer-attachments-repository";
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository;
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 let sut: FecthQuestionAnswersUseCase;
 
 describe("Fecth Question Answers", () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository();
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository();
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository
+    );
     sut = new FecthQuestionAnswersUseCase(inMemoryAnswersRepository);
 
     // habilitar uso de datas fakes no new Date()

@@ -1,12 +1,19 @@
+import { UniqueEntityId } from "@/core/entities/unique-entity-id";
 import { AnswerQuestionUseCase } from "./answer-question";
 import { InMemoryAnswersRepository } from "test/repositories/in-memory-answers-repository";
+import { InMemoryAnswerAttachmentsRepository } from "test/repositories/in-memory-answer-attachments-repository";
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository;
+let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository;
 let sut: AnswerQuestionUseCase;
 
 describe("Create Answer", () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryAnswersRepository();
+    inMemoryAnswerAttachmentsRepository =
+      new InMemoryAnswerAttachmentsRepository();
+    inMemoryAnswersRepository = new InMemoryAnswersRepository(
+      inMemoryAnswerAttachmentsRepository
+    );
     sut = new AnswerQuestionUseCase(inMemoryAnswersRepository);
   });
 
@@ -15,9 +22,19 @@ describe("Create Answer", () => {
       instructorId: "1",
       questionId: "1",
       content: "Nova resposta",
+      attachmentsIds: ["1", "2"],
     });
 
     expect(result.isSuccess()).toBe(true);
-    expect(inMemoryAnswersRepository.items[0]).toEqual(result.value?.answer);
+    if (!result.isSuccess()) return;
+
+    const answer = result.value.answer;
+
+    expect(inMemoryAnswersRepository.items[0]).toEqual(answer);
+    expect(answer.attachments.currentItems).toHaveLength(2);
+    expect(answer.attachments.currentItems).toEqual([
+      expect.objectContaining({ attachmentId: new UniqueEntityId("1") }),
+      expect.objectContaining({ attachmentId: new UniqueEntityId("2") }),
+    ]);
   });
 });
