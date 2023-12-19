@@ -3,13 +3,13 @@ import { Result, success } from "@/core/result";
 import { Notification } from "../../enterprise/entities/notification";
 import { NotificationsRepository } from "../repositories/notifications-repository";
 
-interface SendNotificationUseCaseRequest {
+export interface SendNotificationUseCaseRequest {
   recipientId: string;
   title: string;
   content: string;
 }
 
-type SendNotificationUseCaseResponse = Result<
+export type SendNotificationUseCaseResponse = Result<
   null,
   {
     notification: Notification;
