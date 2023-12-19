@@ -8,8 +8,6 @@ function doSomething(shouldSuccess: boolean): Result<string, number> {
 test("success result", () => {
   const result = doSomething(true);
 
-  if (result.isSuccess()) console.log(result.value);
-
   expect(result.isSuccess()).toBe(true);
   expect(result.isFailure()).toBe(false);
 });
